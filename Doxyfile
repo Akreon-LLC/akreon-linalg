@@ -1,0 +1,52 @@
+# Copyright © 2025-2026 Akreon LLC
+# SPDX-License-Identifier: Apache-2.0
+
+PROJECT_NAME           = "akreon-linalg"
+PROJECT_BRIEF          = "Fixed-size vectors and matrices, constexpr scalar primitives, affine maps, spaces, norms, QR, SVD, eigen decomposition, matrix exponentials, Cholesky and LDL factorization."
+OUTPUT_DIRECTORY       = docs/doxygen
+INPUT                  = include/akreon docs
+FILE_PATTERNS          = *.hpp *.md
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */docs/doxygen/*
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+WARN_IF_UNDOCUMENTED   = YES
+WARN_AS_ERROR          = NO
+USE_MDFILE_AS_MAINPAGE = docs/CODE_REFERENCE.md
+QUIET                  = YES
+JAVADOC_AUTOBRIEF      = YES
+MARKDOWN_SUPPORT       = YES
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
+
+# Graphviz output
+#
+# Keep parity with akreon-python by generating call and dependency graphs, but
+# cap graph breadth/depth for the core's template-heavy headers. SVG output keeps
+# generated diagrams readable when zoomed in browser docs.
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+DOT_NUM_THREADS        = 0
+DOT_GRAPH_MAX_NODES    = 80
+MAX_DOT_GRAPH_DEPTH    = 3
+
+# Type and hierarchy graphs
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = NO
+GRAPHICAL_HIERARCHY    = YES
+GROUP_GRAPHS           = YES
+
+# Function call trees
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+
+# Dependency trees
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+DIRECTORY_GRAPH        = YES

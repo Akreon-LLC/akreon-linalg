@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.30)
+project(AkreonLinalgConsumer LANGUAGES CXX)
+find_package(AkreonLinalg 0.1 CONFIG REQUIRED)
+add_executable(consumer main.cpp)
+target_link_libraries(consumer PRIVATE Akreon::Linalg)
+enable_testing()
+add_test(NAME consumer COMMAND consumer)
