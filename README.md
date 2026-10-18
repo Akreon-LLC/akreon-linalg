@@ -3,9 +3,15 @@
 Fixed-size vectors and matrices, constexpr scalar primitives, affine maps, spaces, norms, QR, SVD, eigen decomposition, matrix exponentials, Cholesky and LDL factorization.
 
 Header-only C++26 library. Public target: `Akreon::Linalg`; installed package:
-`AkreonLinalg`. Dependencies: none.
-Public APIs use the `linalg` namespace, with factorization settings in `config`.
+`AkreonLinalg`.
+Public APIs use `linalg`, with factorization settings in `config`.
+Optimization domains and cones belong to akreon-convex.
 Public headers live under `include/akreon/linalg/`. Only canonical `akreon/...` include paths are supported.
+
+## Compatibility
+
+For toolchain and target compatibility, storage support, and planned
+extensions, see the [support details and roadmap](docs/ROADMAP.md).
 
 ## Build and test
 
@@ -21,8 +27,6 @@ ctest --test-dir build --output-on-failure
 `host-default` and `host-functional-only` presets are also available. Tests default on only for
 the top-level project. Disable tests using `-DBUILD_UNIT_TESTS=OFF
 -DBUILD_FUNCTIONAL_TESTS=OFF`.
-Formatting is available through `clang_format_check` and `clang_format_fix`;
-clang-format is optional for package consumers.
 
 ## Dependencies
 
@@ -57,4 +61,18 @@ Its [main.cpp](examples/consumer/main.cpp) includes `<akreon/linalg/linalg.hpp>`
 and uses a fixed-size vector. Follow the same pattern in your own project,
 setting `CMAKE_PREFIX_PATH` to the installation prefix. Include directories and
 the C++ standard requirement propagate through `Akreon::Linalg`.
-API details are in [docs/CODE_REFERENCE.md](docs/CODE_REFERENCE.md).
+
+## Documentation
+
+The [architecture guide](docs/ARCHITECTURE.md) is the Doxygen landing page.
+Contributor workflow is in [CONTRIBUTING.md](CONTRIBUTING.md); test coverage is
+in [tests/README.md](tests/README.md).
+API and algorithm documentation is generated from the header comments. To build
+both together, install Doxygen and Graphviz, then run from this repository:
+
+```sh
+doxygen Doxyfile
+```
+
+Open `docs/doxygen/html/index.html`. The same generated HTML directory can be
+published to GitHub Pages; no separate copy of the architecture guide is needed.
