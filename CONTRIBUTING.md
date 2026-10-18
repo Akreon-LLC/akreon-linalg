@@ -1,9 +1,40 @@
-Follow AGENTS.md and the checked-in clang-format configuration.
-Build and run the independent suite as described in README.md.
-Keep algorithms constexpr and keep dependency edges within the documented graph.
+# Contributing
 
-CI checks out development dependencies explicitly in `.deps`. For private
-repositories, configure `AKREON_DEPENDENCY_TOKEN` with read access.
-`AKREON_LINALG_REF` and `AKREON_CONVEX_REF` repository variables can pin CI
-to reviewed commits; switch these to release tags when published.
-The library fallback itself is always pinned to the documented release tag.
+Use the [README](README.md) for setup and package-consumer commands, the
+[architecture guide](docs/ARCHITECTURE.md) for ownership boundaries, and the
+[support roadmap](docs/ROADMAP.md) for feature status. See
+[tests/README.md](tests/README.md) for verification coverage and [AGENTS.md](AGENTS.md)
+for agent-specific instructions.
+
+## Documentation ownership
+
+| Source | Owns |
+| --- | --- |
+| `README.md` | Setup, dependency resolution, install/consumer commands, and documentation entry points |
+| `docs/ARCHITECTURE.md` | Component ownership, source map, and data flow |
+| `docs/ROADMAP.md` | Compatibility, support status, known gaps, and future work |
+| `tests/README.md` | Test inventory and verification scope |
+| Header comments | API contracts and algorithm details, rendered by Doxygen |
+| `CONTRIBUTING.md` | Change workflow, formatting, and CI administration |
+
+Link to the owning document instead of copying its tables, commands, or details.
+
+## Changes and formatting
+
+Preserve typed, constexpr APIs and numerical semantics. Keep generic numerical
+work and domain-specific logic in their owning libraries. Update the relevant
+header comments when API contracts or algorithms change; update the roadmap
+when support status changes.
+
+Follow `.clang-format` and use clang-format 22 for consistent results:
+
+```sh
+cmake --build build --target clang_format_check
+cmake --build build --target clang_format_fix
+```
+
+These targets are available for a top-level build when clang-format is installed.
+
+## CI configuration
+
+This repository has no Akreon dependency checkouts in CI.

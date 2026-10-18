@@ -56,21 +56,4 @@ struct coordinate_map<SymmetricMatrixSpace<T, Dim>> {
   }
 };
 
-/**
- * @brief Positive-semidefinite subset of a coordinatized ambient space.
- *
- * The ambient element representation must provide `is_psd()`. Membership is
- * evaluated on the canonical element rather than on its coordinate vector.
- */
-template <class AmbientSpace>
-  requires CoordinatizedSpace<AmbientSpace>
-struct PsdCone {
-  using ambient_space = AmbientSpace;
-  using element_type = space_element_t<AmbientSpace>;
-
-  static constexpr bool contains(const element_type& element) {
-    return element.is_psd();
-  }
-};
-
 } // namespace linalg
