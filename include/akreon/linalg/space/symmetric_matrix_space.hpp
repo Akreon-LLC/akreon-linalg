@@ -38,9 +38,9 @@ struct space_traits<SymmetricMatrixSpace<T, Dim>> {
  * @brief Symmetric half-vectorization coordinate isomorphism.
  *
  * `to_coordinates` returns the element's `svec` representation. Off-diagonal
- * entries use the SDK's square-root-of-two scaling, preserving the Frobenius
- * inner product in coordinates. `from_coordinates` applies the inverse `smat`
- * transform and reconstructs a `SymmetricMatrix`.
+ * entries use the Akreon Linalg's square-root-of-two scaling, preserving the
+ * Frobenius inner product in coordinates. `from_coordinates` applies the
+ * inverse `smat` transform and reconstructs a `SymmetricMatrix`.
  */
 template <Real T, std::size_t Dim>
 struct coordinate_map<SymmetricMatrixSpace<T, Dim>> {

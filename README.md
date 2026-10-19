@@ -76,3 +76,13 @@ doxygen Doxyfile
 
 Open `docs/doxygen/html/index.html`. The same generated HTML directory can be
 published to GitHub Pages; no separate copy of the architecture guide is needed.
+
+## Citation
+
+If you use this software in research, please cite it using the metadata in
+[CITATION.cff](CITATION.cff).
+
+## License and notices
+
+Licensed under [Apache 2.0](LICENSE). See [NOTICE](NOTICE) for attribution
+information.

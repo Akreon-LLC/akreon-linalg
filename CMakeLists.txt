@@ -23,6 +23,7 @@ install(DIRECTORY test-support/ DESTINATION ${CMAKE_INSTALL_DATADIR}/akreon-lina
 
 install(TARGETS akreon_linalg akreon_linalg_test_support EXPORT AkreonLinalgTargets)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES LICENSE NOTICE DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${PROJECT_NAME})
 install(EXPORT AkreonLinalgTargets NAMESPACE Akreon:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AkreonLinalg)
 configure_package_config_file(cmake/AkreonLinalgConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/AkreonLinalgConfig.cmake

@@ -12,7 +12,7 @@
 namespace linalg {
 
 /**
- * @brief Type registered with the SDK scalar trait system.
+ * @brief Type registered with the Akreon Linalg scalar trait system.
  *
  * Satisfaction requires `scalar_traits<remove_cvref_t<T>>` to expose both the
  * normalized scalar representation and its associated real component type.
@@ -26,7 +26,8 @@ concept Scalar = requires {
 };
 
 /**
- * @brief Registered scalar supporting the SDK's field arithmetic interface.
+ * @brief Registered scalar supporting the Akreon Linalg's field arithmetic
+ * interface.
  *
  * Addition, subtraction, multiplication, and division between two normalized
  * values must each produce a result convertible to that same scalar type. The
