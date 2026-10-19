@@ -36,7 +36,7 @@ template <class Mat>
 struct mat_traits;
 
 /**
- * @brief Traits for the SDK's owning `Matrix` container.
+ * @brief Traits for the Akreon Linalg's owning `Matrix` container.
  *
  * In addition to scalar and shape metadata, this specialization provides
  * constexpr construction helpers used heavily by tests and compile-time model

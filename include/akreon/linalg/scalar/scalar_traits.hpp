@@ -25,7 +25,7 @@ using remove_cvref_t = std::remove_cvref_t<T>;
  * A specialization registers a scalar representation by exposing
  * `scalar_type`, `real_type`, `is_real`, and `is_complex`. The primary template
  * is intentionally undefined, preventing arbitrary arithmetic types from
- * silently entering the SDK's mathematical type system.
+ * silently entering the Akreon Linalg's mathematical type system.
  *
  * `scalar_type` is the normalized scalar representation. `real_type` is its
  * underlying real component type, which is the scalar itself for a real type
