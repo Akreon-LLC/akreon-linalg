@@ -11,11 +11,12 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  PRESET: host-default
 
 jobs:
   build:
     runs-on: ubuntu-24.04
+    env:
+      PRESET: ${{ matrix.preset || 'host-default' }}
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +30,10 @@ jobs:
           - compiler: clang22
             cc: clang-22
             cxx: clang++-22
+          - compiler: clang22
+            cc: clang-22
+            cxx: clang++-22
+            preset: host-sanitized
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +67,9 @@ jobs:
           sudo apt-get install -y clang-format-22
           if [[ "${{ matrix.compiler }}" == "clang22" ]]; then
             sudo apt-get install -y libc++-22-dev libc++abi-22-dev lld-22
+          fi
+          if [[ "$PRESET" == "host-sanitized" ]]; then
+            sudo apt-get install -y libclang-rt-22-dev
           fi
 
       # --- Set CC/CXX for subsequent steps ---
@@ -109,13 +117,14 @@ jobs:
 
       # --- Test ---
       - name: Run tests
-        run: ctest --test-dir out/build/host-default --output-on-failure -C ${{ env.BUILD_TYPE }}
+        run: ctest --test-dir "out/build/$PRESET" --output-on-failure -C ${{ env.BUILD_TYPE }}
 
       - name: Install and test package consumer
         run: |
-          cmake --install out/build/host-default --prefix "$RUNNER_TEMP/akreon-install"
+          cmake --install "out/build/$PRESET" --prefix "$RUNNER_TEMP/akreon-install"
           cmake -S examples/consumer -B "$RUNNER_TEMP/consumer" \
             -DCMAKE_PREFIX_PATH="$RUNNER_TEMP/akreon-install" \
+            -DAKREON_LINALG_ENABLE_SANITIZERS=${{ matrix.preset == 'host-sanitized' && 'ON' || 'OFF' }} \
             "${{ matrix.compiler == 'clang22' && '-DCMAKE_CXX_FLAGS=-stdlib=libc++' || '-DCMAKE_CXX_FLAGS=' }}"
           cmake --build "$RUNNER_TEMP/consumer"
           ctest --test-dir "$RUNNER_TEMP/consumer" --output-on-failure

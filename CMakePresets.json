@@ -18,6 +18,16 @@
       }
     },
     {
+      "name": "host-sanitized",
+      "displayName": "Host ASan and UBSan",
+      "inherits": "host-default",
+      "binaryDir": "${sourceDir}/out/build/host-sanitized",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "AKREON_LINALG_ENABLE_SANITIZERS": "ON"
+      }
+    },
+    {
       "name": "host-functional-only",
       "displayName": "Host Functional Only",
       "description": "Host build without unit tests/Catch2",
@@ -37,6 +47,19 @@
     {
       "name": "host-functional-only",
       "configurePreset": "host-functional-only"
+    },
+    {
+      "name": "host-sanitized",
+      "configurePreset": "host-sanitized"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "host-sanitized",
+      "configurePreset": "host-sanitized",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }
