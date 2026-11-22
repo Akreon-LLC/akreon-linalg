@@ -61,3 +61,4 @@ HTML_EXTRA_STYLESHEET  = docs/theme/doxygen-awesome.css \
 # Render equations in the browser
 USE_MATHJAX            = YES
 MATHJAX_VERSION        = MathJax_3
+MATHJAX_CODEFILE       = docs/mathjax.js

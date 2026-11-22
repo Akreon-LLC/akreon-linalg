@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(AkreonLinalg VERSION 0.1.0 LANGUAGES CXX)
 option(BUILD_UNIT_TESTS "Build Catch2 unit tests" ${PROJECT_IS_TOP_LEVEL})
 option(BUILD_FUNCTIONAL_TESTS "Build functional tests" ${PROJECT_IS_TOP_LEVEL})
+option(AKREON_LINALG_ENABLE_SANITIZERS "Instrument Linalg tests with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -12,6 +13,14 @@ target_compile_features(akreon_linalg INTERFACE cxx_std_26)
 target_include_directories(akreon_linalg INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+add_library(akreon_linalg_sanitizers INTERFACE)
+add_library(Akreon::LinalgSanitizers ALIAS akreon_linalg_sanitizers)
+set_target_properties(akreon_linalg_sanitizers PROPERTIES EXPORT_NAME LinalgSanitizers)
+target_compile_options(akreon_linalg_sanitizers INTERFACE
+  -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined)
+target_link_options(akreon_linalg_sanitizers INTERFACE -fsanitize=address,undefined)
+
 add_library(akreon_linalg_test_support INTERFACE)
 add_library(Akreon::LinalgTestSupport ALIAS akreon_linalg_test_support)
 set_target_properties(akreon_linalg_test_support PROPERTIES EXPORT_NAME LinalgTestSupport)
@@ -21,7 +30,7 @@ target_include_directories(akreon_linalg_test_support INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_DATADIR}/akreon-linalg/test-support>)
 install(DIRECTORY test-support/ DESTINATION ${CMAKE_INSTALL_DATADIR}/akreon-linalg/test-support)
 
-install(TARGETS akreon_linalg akreon_linalg_test_support EXPORT AkreonLinalgTargets)
+install(TARGETS akreon_linalg akreon_linalg_test_support akreon_linalg_sanitizers EXPORT AkreonLinalgTargets)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES LICENSE NOTICE DESTINATION ${CMAKE_INSTALL_DATADIR}/licenses/${PROJECT_NAME})
 install(EXPORT AkreonLinalgTargets NAMESPACE Akreon:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AkreonLinalg)
@@ -35,6 +44,11 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/AkreonLinalgConfig.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AkreonLinalg)
 
 if(PROJECT_IS_TOP_LEVEL AND (BUILD_UNIT_TESTS OR BUILD_FUNCTIONAL_TESTS))
+  if(AKREON_LINALG_ENABLE_SANITIZERS AND
+     (NOT CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$" OR
+      CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC"))
+    message(FATAL_ERROR "AKREON_LINALG_ENABLE_SANITIZERS requires GCC or Clang with a GNU-compatible driver")
+  endif()
   enable_testing()
   add_subdirectory(tests)
 endif()

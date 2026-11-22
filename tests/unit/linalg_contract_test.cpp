@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <cmath>
 #include <complex>
+#include <limits>
 #include <type_traits>
 
 #include <catch2/catch_test_macros.hpp>
@@ -11,6 +13,19 @@
 #include "akreon/linalg/linalg.hpp"
 #include "akreon/linalg/norms/norm_traits.hpp"
 #include "akreon/linalg/operator/operator_traits.hpp"
+
+namespace {
+struct IndexedVector {
+  double value;
+  constexpr double operator()(std::size_t) const { return value; }
+};
+} // namespace
+
+template <>
+struct linalg::vector_traits<IndexedVector> {
+  using element_type = double;
+  static constexpr std::size_t dim = 1;
+};
 
 namespace {
 
@@ -64,6 +79,10 @@ TEST_CASE("linalg compile-time contracts", "[linalg][contracts]") {
   STATIC_REQUIRE(linalg::VectorContainer<ComplexVector>);
   STATIC_REQUIRE(!linalg::VectorContainer<double>);
   STATIC_REQUIRE(linalg::FieldVector<RealVector>);
+  STATIC_REQUIRE(linalg::FieldVector<const ComplexVector&>);
+  STATIC_REQUIRE(!linalg::FieldVector<linalg::Vector<int, 3>>);
+  STATIC_REQUIRE(linalg::VectorContainer<IndexedVector>);
+  STATIC_REQUIRE(!linalg::FieldVector<IndexedVector>);
   STATIC_REQUIRE(linalg::RealVector<const RealVector&>);
   STATIC_REQUIRE(!linalg::ComplexVector<RealVector>);
   STATIC_REQUIRE(linalg::ComplexVector<const ComplexVector&>);
@@ -200,8 +219,44 @@ TEST_CASE("inner products follow the field convention",
                                       std::complex<double>{0.0, 3.0}};
   constexpr auto squared_norm = linalg::inner_product(complex_lhs, complex_lhs);
   STATIC_REQUIRE(squared_norm == std::complex<double>{16.0, 0.0});
-  STATIC_REQUIRE(linalg::L2<ComplexVector>{}(complex_lhs) ==
-                 linalg::constexpr_sqrt_safe(16.0));
+  STATIC_REQUIRE(linalg::constexpr_abs(
+                     linalg::L2<ComplexVector>{}(complex_lhs)-4.0) < 1e-14);
+}
+
+TEST_CASE("L2 preserves representable norms at extreme magnitudes",
+          "[linalg][contracts][norm]") {
+  constexpr double large = 0x1p700;
+  constexpr double small = 0x1p-700;
+  constexpr RealVector zero{0.0, 0.0, 0.0};
+  constexpr RealVector large_vector{0.0, -large, small};
+  constexpr RealVector small_vector{small, 0.0, 0.0};
+  constexpr auto norm = linalg::L2<RealVector>{};
+  STATIC_REQUIRE(norm(zero) == 0.0);
+  STATIC_REQUIRE(norm(large_vector) == large);
+  STATIC_REQUIRE(norm(small_vector) == small);
+  STATIC_REQUIRE(norm(RealVector{1e-100, 0.0, 0.0}) == 1e-100);
+  STATIC_REQUIRE(norm(RealVector{1e-6, 0.0, 0.0}) == 1e-6);
+  STATIC_REQUIRE(norm(RealVector{1e72, 0.0, 0.0}) == 1e72);
+  STATIC_REQUIRE(norm(RealVector{1e100, 0.0, 0.0}) == 1e100);
+  STATIC_REQUIRE(norm(RealVector{1e150, 0.0, 0.0}) == 1e150);
+  STATIC_REQUIRE(linalg::euclidean_distance(small_vector, zero) == small);
+  STATIC_REQUIRE_FALSE(linalg::all_equal(small_vector, zero, small / 2));
+
+  constexpr auto complex_norm = linalg::L2<ComplexVector>{};
+  constexpr ComplexVector large_complex{std::complex{3 * large, 4 * large},
+                                        std::complex<double>{},
+                                        std::complex<double>{}};
+  constexpr ComplexVector small_complex{std::complex{3 * small, 4 * small},
+                                        std::complex<double>{},
+                                        std::complex<double>{}};
+  STATIC_REQUIRE(complex_norm(large_complex) == 5 * large);
+  STATIC_REQUIRE(complex_norm(small_complex) == 5 * small);
+
+  const auto infinity = std::numeric_limits<double>::infinity();
+  const auto nan = std::numeric_limits<double>::quiet_NaN();
+  REQUIRE(std::isinf(norm(RealVector{infinity, -infinity, 1.0})));
+  REQUIRE(std::isnan(norm(RealVector{nan, 1.0, infinity})));
+  REQUIRE(std::isnan(norm(RealVector{infinity, 1.0, nan})));
 }
 
 TEST_CASE("matrix operator traits preserve domain and codomain",

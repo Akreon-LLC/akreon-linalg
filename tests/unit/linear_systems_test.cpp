@@ -190,19 +190,18 @@ TEST_CASE("Least-squares solve recovers real and complex solutions",
     constexpr auto rank = qr.rank();
     STATIC_REQUIRE(rank == 2);
 
-    constexpr auto QTQ = transpose(Q) * Q;
+    constexpr auto QTQ = conjugate_transpose(Q) * Q;
     STATIC_REQUIRE(std::same_as<decltype(QTQ), const Matrixcd<3, 3>>);
     constexpr auto QTQr = get_n_cols<0, rank>(get_n_rows<0, rank>(QTQ));
     STATIC_REQUIRE(all_equal(QTQr, make_identity<std::complex<double>, 2>()));
 
-    constexpr auto d = std::complex<double>(5.0, 0);
-    constexpr auto e = std::complex<double>(7.0, 0);
-    constexpr auto y = Vectorcd<3>{c, d, e};
+    constexpr auto expected = Vectorcd<2>{1.0, 2.0};
+    constexpr auto y = A * expected;
     constexpr auto solve_res = qr.solve(y);
     constexpr auto x_tilde = std::get<0>(solve_res);
     constexpr auto flag = std::get<1>(solve_res);
     static_cast<void>(flag);
-    STATIC_REQUIRE(euclidean_distance(x_tilde, Vectorcd<2>{1.0, 2.0}) <= eps);
+    STATIC_REQUIRE(euclidean_distance(x_tilde, expected) <= eps);
   }
 
   SECTION("1x1 case") {
@@ -271,8 +270,8 @@ TEST_CASE(
     STATIC_REQUIRE(result.converged);
 
     constexpr auto expected = make_diag(
-        Vectorcd<3>{std::complex(1.61168440e+01), std::complex(-1.11684397e+00),
-                    std::complex(0.0)});
+        Vectorcd<3>{std::complex(16.116843969807043),
+                    std::complex(-1.116843969807043), std::complex(0.0)});
     constexpr auto lambdas = result.lambda;
     STATIC_REQUIRE(all_equal(make_diag(lambdas), expected));
 

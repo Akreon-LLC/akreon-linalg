@@ -25,9 +25,12 @@ concept VectorContainer = requires {
   { vector_dim_v<Vec> } -> std::convertible_to<std::size_t>;
 };
 
-/** @brief Registered vector whose element type satisfies `Field`. */
+/** @brief Owning Akreon vector whose element type satisfies `Field`. */
 template <class Vec>
-concept FieldVector = VectorContainer<Vec> && Field<vector_element_t<Vec>>;
+concept FieldVector =
+    VectorContainer<Vec> && Field<vector_element_t<Vec>> &&
+    std::same_as<remove_cvref_t<Vec>,
+                 Vector<vector_element_t<Vec>, vector_dim_v<Vec>>>;
 
 /** @brief Field vector over a scalar classified as real. */
 template <class Vec>

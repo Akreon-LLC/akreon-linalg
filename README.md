@@ -118,6 +118,22 @@ doxygen Doxyfile
 
 Open `docs/doxygen/html/index.html`. Tests cover implemented cases, not every dimension or conditioning regime.
 
+### Optional sanitizer checks
+
+To run the tests with AddressSanitizer and UndefinedBehaviorSanitizer, use
+GCC or Clang with a GNU-compatible driver and installed sanitizer runtimes.
+
+```sh
+cmake --preset host-sanitized
+cmake --build --preset host-sanitized --parallel 2
+ctest --preset host-sanitized
+```
+
+For a custom test build, set `-DAKREON_LINALG_ENABLE_SANITIZERS=ON`. In a
+consumer project, link `Akreon::LinalgSanitizers` privately to each C++ target
+you want to instrument and to the final executable. The installed-package
+example accepts the same CMake option.
+
 ## Citation and license
 
 For research citation, use [CITATION.cff](CITATION.cff). Licensed under [Apache 2.0](LICENSE); see [NOTICE](NOTICE) for attribution.

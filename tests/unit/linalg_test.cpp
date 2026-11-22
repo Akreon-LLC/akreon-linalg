@@ -331,7 +331,7 @@ TEST_CASE("Householder vectors", "[householder]") {
     STATIC_REQUIRE(all_equal(transpose(P) * P, I));
 
     constexpr auto Px = P * x;
-    constexpr auto expected = Vectord<4>{-5.47723, 0.0, 0.0, 0.0};
+    constexpr auto expected = Vectord<4>{-5.477225575051661, 0.0, 0.0, 0.0};
     STATIC_REQUIRE(euclidean_distance(Px, expected) <= eps);
   }
 
@@ -354,7 +354,7 @@ TEST_CASE("Householder vectors", "[householder]") {
     // (dakre) complex case reflects in opp dir as reals maybe monitor more as
     // time goes on
     constexpr auto Px = P * x;
-    constexpr std::complex<double> e(-5.47723, 0.0);
+    constexpr std::complex<double> e(-5.477225575051661, 0.0);
     constexpr std::complex<double> f(0.0, 0.0);
     constexpr auto expected = Vectorcd<4>{e, f, f, f};
     STATIC_REQUIRE(euclidean_distance(Px, expected) <= eps);
